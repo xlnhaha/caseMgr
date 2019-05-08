@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: com.lmx.casemgr.CasemgrApplicationTests
+-------------------------------------------------------------------------------
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 3.066 s - in com.lmx.casemgr.CasemgrApplicationTests

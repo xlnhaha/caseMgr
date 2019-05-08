@@ -1,0 +1,10 @@
+com\lmx\casemgr\entity\AddrInfo.class
+com\lmx\casemgr\utils\DicsUtil.class
+com\lmx\casemgr\CasemgrApplication.class
+com\lmx\casemgr\entity\CaseInfo.class
+com\lmx\casemgr\mapper\CaseMapper.class
+com\lmx\casemgr\entity\PageInfo.class
+com\lmx\casemgr\entity\PersonInfo.class
+com\lmx\casemgr\service\CaseService.class
+com\lmx\casemgr\service\impl\CaseServiceImpl.class
+com\lmx\casemgr\controller\CaseController.class

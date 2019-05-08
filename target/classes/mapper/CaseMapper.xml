@@ -1,0 +1,262 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.lmx.casemgr.mapper.CaseMapper">
+
+    <resultMap id="personType" type="PersonInfo">
+        <id column="id" jdbcType="NUMERIC" property="id"/>
+        <result column="name" jdbcType="VARCHAR" property="name"/>
+        <result column="age" jdbcType="NUMERIC" property="age"/>
+        <result column="sex" jdbcType="VARCHAR" property="sex"/>
+        <result column="phone" jdbcType="VARCHAR" property="phone"/>
+        <result column="paddr" jdbcType="VARCHAR" property="paddr"/>
+        <result column="painClass" jdbcType="NUMERIC" property="painClass"/>
+        <result column="painLong" jdbcType="NUMERIC" property="painLong"/>
+        <result column="treatTimes" jdbcType="NUMERIC" property="treatTimes"/>
+        <result column="treatStatus" jdbcType="NUMERIC" property="treatStatus"/>
+        <result column="lastTreat" jdbcType="TIMESTAMP" property="lastTreat"/>
+        <association property="addr" javaType="AddrInfo">
+            <result  column="province" jdbcType="VARCHAR" property="province"/>
+            <result  column="municipal" jdbcType="VARCHAR" property="municipal"/>
+            <result  column="city" jdbcType="VARCHAR" property="city"/>
+            <result  column="area" jdbcType="VARCHAR" property="area"/>
+            <result  column="village" jdbcType="VARCHAR" property="village"/>
+        </association>
+    </resultMap>
+
+    <resultMap id="caseInfo" type="PersonInfo">
+        <id column="pId" jdbcType="NUMERIC" property="id"/>
+        <result column="name" jdbcType="VARCHAR" property="name"/>
+        <result column="age" jdbcType="NUMERIC" property="age"/>
+        <result column="sex" jdbcType="VARCHAR" property="sex"/>
+        <result column="phone" jdbcType="VARCHAR" property="phone"/>
+        <result column="paddr" jdbcType="VARCHAR" property="paddr"/>
+        <result column="painClass" jdbcType="NUMERIC" property="painClass"/>
+        <result column="painLong" jdbcType="NUMERIC" property="painLong"/>
+        <result column="treatTimes" jdbcType="NUMERIC" property="treatTimes"/>
+        <result column="treatStatus" jdbcType="NUMERIC" property="treatStatus"/>
+        <result column="lastTreat" jdbcType="TIMESTAMP" property="lastTreat"/>
+        <association property="addr" javaType="AddrInfo">
+            <result  column="province" jdbcType="VARCHAR" property="province"/>
+            <result  column="municipal" jdbcType="VARCHAR" property="municipal"/>
+            <result  column="city" jdbcType="VARCHAR" property="city"/>
+            <result  column="area" jdbcType="VARCHAR" property="area"/>
+            <result  column="village" jdbcType="VARCHAR" property="village"/>
+        </association>
+        <association property="caseInfo" javaType="CaseInfo">
+            <result  column="cId" jdbcType="NUMERIC" property="id"/>
+            <result  column="treatLog" jdbcType="VARCHAR" property="treatLog"/>
+            <result  column="zhusu" jdbcType="VARCHAR" property="zhusu"/>
+            <result  column="xbs" jdbcType="VARCHAR" property="xbs"/>
+            <result  column="zhenduan" jdbcType="VARCHAR" property="zhenduan"/>
+            <result  column="chati" jdbcType="VARCHAR" property="chati"/>
+            <result  column="createTime" jdbcType="TIMESTAMP" property="createTime"/>
+            <result  column="frontImg" jdbcType="BLOB" property="frontImg"/>
+            <result  column="backImg" jdbcType="BLOB" property="backImg"/>
+            <result  column="sideImg" jdbcType="BLOB" property="sideImg"/>
+        </association>
+    </resultMap>
+
+    <insert id="addPersonInfo" keyProperty="id" parameterType="com.lmx.casemgr.entity.PersonInfo" useGeneratedKeys="true">
+        INSERT INTO person_info (
+        p_name,
+        p_age,
+        p_sex,
+        phone,
+        p_addr_detail,
+        p_province,
+        p_municipal,
+        p_city,
+        p_area,
+        p_village,
+        p_pain_class,
+        p_pain_long,
+        p_treat_times,
+        p_treat_status
+        ) VALUES (#{name},
+        #{age},
+        #{sex},
+        #{phone},
+        #{paddr},
+        #{addr.province},
+        #{addr.municipal},
+        #{addr.city},
+        #{addr.area},
+        #{addr.village},
+        #{painClass},
+        #{painLong},
+        0,
+        0);
+    </insert>
+
+    <insert id="addCaseInfo" keyProperty="id" parameterType="CaseInfo" useGeneratedKeys="true">
+        INSERT INTO case_info
+        (
+          pId,
+          create_time,
+          front_img,
+          back_img,
+          side_img,
+          zhusu,
+          xbs,
+          chati,
+          zhenduan,
+          treat_log
+        ) values
+        (
+          #{personId},
+          #{createTime},
+          #{frontImg},
+          #{backImg},
+          #{sideImg},
+          #{zhusu},
+          #{xbs},
+          #{chati},
+          #{zhenduan},
+          #{treatLog}
+        )
+
+    </insert>
+
+    <select id="queryPersonList" resultMap="personType" parameterType="Map">
+        select
+        p.id as id,
+        p_name as name,
+        p_age as age,
+        p_sex as sex,
+        phone as phone,
+        p_addr_detail as paddr,
+        p_province as province,
+        p_municipal as municipal,
+        p_city as city,
+        p_area as area,
+        p_village as village,
+        p_pain_class as painClass,
+        p_pain_long as painLong,
+        p_treat_times as treatTimes,
+        p_treat_status as treatStatus,
+        max(c.create_time) as lastTreat
+        from person_info p
+        left join case_info c on p.id = c.pId
+        <where>
+          1 = 1
+          <if test="province != null">
+              and p.p_province = #{province}
+          </if>
+          <if test="municipal != null">
+              and p.p_municipal = #{municipal}
+          </if>
+          <if test="city != null">
+              and p.p_city = #{city}
+          </if>
+          <if test="area != null">
+              and p.p_area = #{area}
+          </if>
+          <if test="village != null">
+              and p.p_village = #{village}
+          </if>
+          <if test="name != null">
+              and p.p_name like concat('%',#{name},'%')
+          </if>
+          <if test="painClass != null">
+              and p.p_pain_class = #{painClass}
+          </if>
+          <if test="painLong != null">
+              and p.p_pain_long = #{painLong}
+          </if>
+          <if test="treatTimes != null">
+              and p.p_treat_times = #{treatTimes}
+          </if>
+          <if test="treatStatus != null">
+              and p.p_treat_status = #{treatStatus}
+          </if>
+          <if test="phone != null">
+              and p.phone like concat('%',#{phone},'%')
+          </if>
+          </where>
+          group by p.id
+          <if test="sortP != null and sortR != null">
+            order by ${sortP} ${sortR}
+          </if>
+    </select>
+
+    <select id="queryCasesOfOne" resultType="CaseInfo" parameterType="Map">
+        select
+        id as id,
+        pId as personId,
+        create_time as createTime,
+        zhusu as zhusu,
+        xbs as xbs,
+        chati as chati,
+        zhenduan as zhenduan,
+        treat_log as treatLog
+        from case_info
+        where pId = #{pId}
+    </select>
+
+    <select id="queryCaseById" resultMap="caseInfo" parameterType="Integer">
+        select
+        c.id as cid,
+        c.create_time as createTime,
+        chati as chati,
+        zhusu as zhusu,
+        xbs as xbs,
+        chati as chati,
+        zhenduan as zhenduan,
+        treat_log as treatLog,
+        front_img as frontImg,
+        back_img as backImg,
+        side_img as sideImg,
+        p.id as pid,
+        p_name as name,
+        p_age as age,
+        p_sex as sex,
+        phone as phone,
+        p_addr_detail as paddr,
+        p_province as province,
+        p_municipal as municipal,
+        p_city as city,
+        p_area as area,
+        p_village as village,
+        p_pain_class as painClass,
+        p_pain_long as painLong
+        from case_info c
+        left join person_info p on c.pId = p.id
+        where c.id = #{id}
+    </select>
+
+    <select id="queryPersonInfo" resultMap="personType" parameterType="Integer">
+        select
+        p.id as pid,
+        p_name as name,
+        p_age as age,
+        p_sex as sex,
+        phone as phone,
+        p_addr_detail as paddr,
+        p_province as province,
+        p_municipal as municipal,
+        p_city as city,
+        p_area as area,
+        p_village as village,
+        p_pain_class as painClass,
+        p_pain_long as painLong
+        from person_info p
+        where p.id = #{id}
+    </select>
+
+    <update id="finishTreat" parameterType="Integer">
+      Update person_info
+      set
+      p_treat_status = 2
+      where id = #{pId}
+    </update>
+
+    <update id="addTreatTimes" parameterType="Integer">
+      Update person_info
+      set
+      p_treat_times = p_treat_times + 1,
+      p_treat_status = 1
+      where id = #{pId}
+    </update>
+</mapper>
